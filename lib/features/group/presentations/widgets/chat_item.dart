@@ -3,28 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ChatItem extends StatelessWidget {
-  const ChatItem({super.key});
+  const ChatItem({
+    super.key,
+    required this.press,
+  });
+  final Function() press;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 25, right: 10, top: 10, bottom: 10),
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          _buildAvatar(),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20,
-                top: 5,
-                bottom: 5,
-                right: 5,
+    return InkWell(
+      onTap: press,
+      child: Container(
+        padding:
+            const EdgeInsets.only(left: 25, right: 10, top: 10, bottom: 10),
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(
+          children: [
+            _buildAvatar(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  top: 5,
+                  bottom: 5,
+                  right: 5,
+                ),
+                child: _buildBody(context),
               ),
-              child: _buildBody(context),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
