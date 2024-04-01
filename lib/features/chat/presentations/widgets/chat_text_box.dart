@@ -9,7 +9,7 @@ class ChatTextBox extends StatefulWidget {
 }
 
 class _ChatTextBoxState extends State<ChatTextBox> {
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
   @override
   void initState() {
     _focusNode.addListener(_onFocusChange);
@@ -46,7 +46,7 @@ class _ChatTextBoxState extends State<ChatTextBox> {
               borderRadius: BorderRadius.circular(30),
             ),
             alignment: Alignment.center,
-            // padding: const EdgeInsets.only(left: 8, right: 8),
+            padding: const EdgeInsets.only(left: 3, right: 3, bottom: 1),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
