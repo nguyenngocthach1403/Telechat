@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:telechat/config/themes/light_theme.dart';
 import 'package:telechat/features/chat/presentations/views/chat_page.dart';
+import 'package:telechat/features/login/presentation/view/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme().lightTheme,
-      home: const ChatPage(),
+      home: const LoginPage(),
     );
   }
 }

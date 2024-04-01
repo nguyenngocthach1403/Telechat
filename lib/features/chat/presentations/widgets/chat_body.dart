@@ -21,7 +21,9 @@ class _ChatBodyState extends State<ChatBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarCustom(),
+      appBar: AppBarCustom(
+        pressPop: () => Navigator.pop(context),
+      ),
       body: Column(
         children: [
           Expanded(child: _buildChatList()),

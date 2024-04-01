@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:telechat/core/utils/widgets/bottom_navigator.dart';
+import 'package:telechat/features/chat/presentations/views/chat_page.dart';
 import 'package:telechat/features/group/presentations/widgets/add_person.dart';
 import 'package:telechat/features/group/presentations/widgets/appbar.dart';
 import 'package:telechat/features/group/presentations/widgets/chat_item.dart';
@@ -19,7 +20,9 @@ class _GroupListBodyState extends State<GroupListBody> {
     return Scaffold(
       appBar: AppBarCustom(
         pressAction: () {},
-        pressPop: () {},
+        pressPop: () {
+          Navigator.pop(context);
+        },
       ),
       body: Column(
         children: [
@@ -103,7 +106,7 @@ class _GroupListBodyState extends State<GroupListBody> {
 
   Widget _listPeople() {
     return Row(
-      children: List.generate(20, (index) => PersonRecommended()),
+      children: List.generate(20, (index) => const PersonRecommended()),
     );
   }
 
@@ -116,7 +119,16 @@ class _GroupListBodyState extends State<GroupListBody> {
         slivers: [
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => const ChatItem(),
+              (context, index) => ChatItem(
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChatPage(),
+                    ),
+                  );
+                },
+              ),
             ),
           )
         ],

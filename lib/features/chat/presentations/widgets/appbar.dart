@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
 class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
-  const AppBarCustom({super.key});
+  const AppBarCustom({super.key, required this.pressPop});
+  final Function() pressPop;
 
   @override
   State<AppBarCustom> createState() => _AppBarCustomState();
@@ -20,7 +21,7 @@ class _AppBarCustomState extends State<AppBarCustom> {
       shadowColor: Colors.black,
       backgroundColor: Theme.of(context).colorScheme.background,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: widget.pressPop,
         icon: const Icon(Ionicons.arrow_back),
       ),
       title: _buildTitle(),
