@@ -1,33 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:telechat/core/utils/widgets/loader.dart';
 import 'package:telechat/core/utils/widgets/snackbar.dart';
-import 'package:telechat/features/group/presentations/views/group_list_page.dart';
-import 'package:telechat/features/login/presentation/bloc/auth/auth_bloc.dart';
+import 'package:telechat/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:telechat/features/auth/presentation/view/login_page.dart';
 
-class LoginBody extends StatefulWidget {
-  const LoginBody({super.key});
+class SignUpBody extends StatefulWidget {
+  const SignUpBody({super.key});
 
   @override
-  State<LoginBody> createState() => _LoginBodyState();
+  State<SignUpBody> createState() => _SignUpBodyState();
 }
 
-class _LoginBodyState extends State<LoginBody> {
+class _SignUpBodyState extends State<SignUpBody> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   FocusNode userFocusNode = FocusNode();
   FocusNode passFocusNode = FocusNode();
+  FocusNode emailFocusNode = FocusNode();
 
   @override
   void initState() {
     userFocusNode.addListener(_onFocus);
+    passFocusNode.addListener(_onFocus);
+    emailFocusNode.addListener(_onFocus);
     super.initState();
   }
 
   @override
   void dispose() {
     userFocusNode.dispose();
+    passFocusNode.dispose();
+    emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -38,34 +43,45 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthSuccess) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GroupListPage(),
-            ),
-          );
-          showSnackBarr(context,
-              color: Colors.green,
-              title: 'Login Successfully',
-              content: 'Account: ${state.user.email}');
-        }
-        if (state is AuthFail) {
-          showSnackBarr(context,
-              color: Colors.red,
-              title: 'Login Failed',
-              content: 'Error: ${state.error.message}');
-        }
-      },
-      builder: (context, state) {
-        if (state is AuthLoading) {
-          return const Loader();
-        }
-        return _buidBody();
-      },
-    ));
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          switch (state) {
+            case AuthFail():
+              {
+                showSnackBarr(
+                  context,
+                  color: Colors.red,
+                  content: state.error.message!,
+                  title: 'Register Failed',
+                );
+              }
+              break;
+            case AuthSuccess():
+              {
+                showSnackBarr(
+                  context,
+                  color: Colors.green,
+                  content: state.user.name,
+                  title: 'Register Successfully',
+                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              }
+              break;
+          }
+        },
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Loader();
+          }
+          return _buidBody();
+        },
+      ),
+    );
   }
 
   Widget _buidBody() {
@@ -81,6 +97,13 @@ class _LoginBodyState extends State<LoginBody> {
               const SizedBox(
                 height: 20,
               ),
+
+              //Emaill
+              _buildEmailTextBox(context),
+
+              const SizedBox(
+                height: 20,
+              ),
               // Password
               _buildPasswordTextBox(context),
 
@@ -88,14 +111,15 @@ class _LoginBodyState extends State<LoginBody> {
                 height: 20,
               ),
               // Button login
-              _buildButtonLogin(
-                context,
-                press: () {
-                  //
-                  BlocProvider.of<AuthBloc>(context).add(LoginEvent(
-                      userNameController.text, passwordController.text));
-                },
-              ),
+              _buildButtonRegister(context, press: () {
+                BlocProvider.of<AuthBloc>(context).add(
+                  SignUpEvent(
+                    emailController.text,
+                    passwordController.text,
+                    userNameController.text,
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -119,6 +143,31 @@ class _LoginBodyState extends State<LoginBody> {
       child: TextField(
         focusNode: userFocusNode,
         controller: userNameController,
+        decoration: const InputDecoration(
+          hintText: 'Username',
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmailTextBox(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 50),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: emailFocusNode.hasFocus
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).colorScheme.secondary,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: TextField(
+        focusNode: emailFocusNode,
+        controller: emailController,
         decoration: const InputDecoration(
           hintText: 'Email',
           border: InputBorder.none,
@@ -153,7 +202,8 @@ class _LoginBodyState extends State<LoginBody> {
     );
   }
 
-  Widget _buildButtonLogin(BuildContext context, {required Function() press}) {
+  Widget _buildButtonRegister(BuildContext context,
+      {required Function() press}) {
     return InkWell(
       onTap: press,
       child: Container(
@@ -165,7 +215,7 @@ class _LoginBodyState extends State<LoginBody> {
         ),
         alignment: Alignment.center,
         child: Text(
-          'Login',
+          'Register',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.background,
@@ -174,4 +224,8 @@ class _LoginBodyState extends State<LoginBody> {
       ),
     );
   }
+
+  // void register() {
+
+  // }
 }

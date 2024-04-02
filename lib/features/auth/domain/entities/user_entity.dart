@@ -8,11 +8,21 @@ class UserEntity extends Equatable {
   final String name;
   final String password;
   final String email;
+  final String profileUrl;
+  final String gender;
+  final bool isOnline;
+  final String status;
+  final String dob;
   const UserEntity({
     this.uid = '',
     this.name = '',
     this.password = '',
     this.email = '',
+    this.profileUrl = '',
+    this.gender = '',
+    this.isOnline = false,
+    this.status = '',
+    this.dob = '',
   });
 
   UserEntity copyWith({
@@ -20,12 +30,22 @@ class UserEntity extends Equatable {
     String? name,
     String? password,
     String? email,
+    String? profileUrl,
+    String? gender,
+    bool? isOnline,
+    String? status,
+    String? dob,
   }) {
     return UserEntity(
       uid: uid ?? this.uid,
       name: name ?? this.name,
       password: password ?? this.password,
       email: email ?? this.email,
+      profileUrl: profileUrl ?? this.profileUrl,
+      gender: gender ?? this.gender,
+      isOnline: isOnline ?? this.isOnline,
+      status: status ?? this.status,
+      dob: dob ?? this.dob,
     );
   }
 
@@ -35,6 +55,11 @@ class UserEntity extends Equatable {
       'name': name,
       'password': password,
       'email': email,
+      'profileUrl': profileUrl,
+      'gender': gender,
+      'isOnline': isOnline,
+      'status': status,
+      'dob': dob,
     };
   }
 
@@ -44,6 +69,11 @@ class UserEntity extends Equatable {
       name: map['name'] as String,
       password: map['password'] as String,
       email: map['email'] as String,
+      profileUrl: map['profileUrl'] as String,
+      gender: map['gender'] as String,
+      isOnline: map['isOnline'] as bool,
+      status: map['status'] as String,
+      dob: map['dob'] as String,
     );
   }
 
@@ -56,5 +86,17 @@ class UserEntity extends Equatable {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [uid, name, password, email];
+  List<Object> get props {
+    return [
+      uid,
+      name,
+      password,
+      email,
+      profileUrl,
+      gender,
+      isOnline,
+      status,
+      dob,
+    ];
+  }
 }

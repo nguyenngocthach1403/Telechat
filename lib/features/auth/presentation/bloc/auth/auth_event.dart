@@ -12,3 +12,10 @@ class LoginEvent extends AuthEvent {
   final String passWord;
   const LoginEvent(this.email, this.passWord);
 }
+
+class SignUpEvent extends AuthEvent {
+  final String userName;
+  final String email;
+  final String password;
+  const SignUpEvent(this.email, this.password, this.userName);
+}
