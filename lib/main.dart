@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:telechat/config/themes/light_theme.dart';
-import 'package:telechat/features/chat/presentations/views/chat_page.dart';
 import 'package:telechat/features/login/presentation/view/login_page.dart';
 import 'package:telechat/firebase_options.dart';
+import 'package:telechat/injection.container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +11,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await initializeDependency();
   runApp(const MyApp());
 }
 

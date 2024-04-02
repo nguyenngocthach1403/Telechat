@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:telechat/core/utils/widgets/loader.dart';
+import 'package:telechat/core/utils/widgets/snackbar.dart';
 import 'package:telechat/features/group/presentations/views/group_list_page.dart';
+import 'package:telechat/features/login/presentation/bloc/auth/auth_bloc.dart';
 
 class LoginBody extends StatefulWidget {
   const LoginBody({super.key});
@@ -34,38 +38,65 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // User name
-                _buildUserNameTextBox(context),
-
-                const SizedBox(
-                  height: 20,
-                ),
-                // Password
-                _buildPasswordTextBox(context),
-
-                const SizedBox(
-                  height: 20,
-                ),
-                // Button login
-                _buildButtonLogin(
-                  context,
-                  press: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GroupListPage(),
-                      ),
-                    );
-                  },
-                ),
-              ],
+        body: BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupListPage(),
             ),
+          );
+          showSnackBarr(context,
+              color: Colors.green,
+              title: 'Login Successfully',
+              content: 'Account: ${state.user.email}');
+        }
+        if (state is AuthFail) {
+          showSnackBarr(context,
+              color: Colors.red,
+              title: 'Login Failed',
+              content: 'Error: ${state.error.message}');
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const Loader();
+        }
+        return _buidBody();
+      },
+    ));
+  }
+
+  Widget _buidBody() {
+    return SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // User name
+              _buildUserNameTextBox(context),
+
+              const SizedBox(
+                height: 20,
+              ),
+              // Password
+              _buildPasswordTextBox(context),
+
+              const SizedBox(
+                height: 20,
+              ),
+              // Button login
+              _buildButtonLogin(
+                context,
+                press: () {
+                  //
+                  BlocProvider.of<AuthBloc>(context).add(LoginEvent(
+                      userNameController.text, passwordController.text));
+                },
+              ),
+            ],
           ),
         ),
       ),
