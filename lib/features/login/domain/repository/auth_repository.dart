@@ -8,4 +8,6 @@ abstract class AuthRepository {
       {required UserEntity user});
   Future<DataState<UserModel, FirebaseException>> registerWithEmailAndPassword(
       {required UserEntity user});
+
+  Future<bool> isSignIn();
 }

@@ -20,4 +20,9 @@ class AuthRepositoryImpl implements AuthRepository {
       {required UserEntity user}) {
     return _authServiceImpl.loginWithEmailAndPassWord(user: user);
   }
+
+  @override
+  Future<bool> isSignIn() {
+    return _authServiceImpl.isSignIn();
+  }
 }

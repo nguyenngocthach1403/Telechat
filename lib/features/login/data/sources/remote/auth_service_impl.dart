@@ -8,6 +8,7 @@ abstract class AuthService {
       {required UserEntity user});
   Future<DataState<UserModel, FirebaseException>> signUpWithEmailAndPassWord(
       {required UserEntity user});
+  Future<bool> isSignIn();
 }
 
 class AuthServiceImpl extends AuthService {
@@ -49,4 +50,7 @@ class AuthServiceImpl extends AuthService {
       return DataFailed(error: e);
     }
   }
+
+  @override
+  Future<bool> isSignIn() async => _auth.currentUser?.uid != null;
 }
