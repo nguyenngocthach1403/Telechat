@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:telechat/features/group/domain/entities/user_entity.dart';
 
 class PersonRecommended extends StatelessWidget {
-  const PersonRecommended({super.key});
+  const PersonRecommended({super.key, required this.user});
+  final UserEntity user;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,9 @@ class PersonRecommended extends StatelessWidget {
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Theme.of(context).primaryColor,
+          color: user.isOnline
+              ? Theme.of(context).primaryColor
+              : Colors.transparent,
           width: 2.0,
         ),
         borderRadius: BorderRadius.circular(58),
@@ -22,8 +26,11 @@ class PersonRecommended extends StatelessWidget {
         height: double.maxFinite,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          image: const DecorationImage(
-            image: AssetImage('assets/images/h1.png'),
+          image: DecorationImage(
+            image: user.profileUrl.isNotEmpty
+                ? NetworkImage(user.profileUrl)
+                : const NetworkImage(
+                    'https://th.bing.com/th/id/OIP.ttYz33RwCujbjz1J9m8lBQHaFK?rs=1&pid=ImgDetMain'),
             fit: BoxFit.cover,
           ),
         ),

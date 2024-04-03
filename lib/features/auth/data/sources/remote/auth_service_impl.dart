@@ -31,8 +31,6 @@ class AuthServiceImpl extends AuthService {
           uid: result.user!.uid,
         ),
       );
-      // return DataSuccess(data: UserModel());
-      // throw FirebaseException(plugin: '');
     } on FirebaseException catch (e) {
       return DataFailed(error: e);
     }
