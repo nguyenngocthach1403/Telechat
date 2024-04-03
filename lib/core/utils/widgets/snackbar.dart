@@ -27,15 +27,19 @@ Widget _snackBarCustom(BuildContext context,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            content,
-            style: TextStyle(color: Colors.white),
-          )
+          title.isNotEmpty
+              ? Text(
+                  title,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600),
+                )
+              : const SizedBox(),
+          content.isNotEmpty
+              ? Text(
+                  content,
+                  style: TextStyle(color: Colors.white),
+                )
+              : const SizedBox(),
         ],
       ),
       Positioned(

@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:telechat/features/group/domain/entities/group_entity.dart';
 
 class ChatItem extends StatelessWidget {
   const ChatItem({
     super.key,
     required this.press,
+    required this.group,
   });
   final Function() press;
+  final GroupEntity group;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,13 @@ class ChatItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.amber,
         borderRadius: BorderRadius.circular(50),
+        image: DecorationImage(
+          image: group.groupImage.isNotEmpty
+              ? NetworkImage(group.groupImage)
+              : const NetworkImage(
+                  'https://www.freeiconspng.com/uploads/no-image-icon-11.PNG'),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
@@ -60,40 +70,42 @@ class ChatItem extends StatelessWidget {
               child: Row(
                 children: [
                   //Name
-                  const Text(
-                    'Smith Mathew',
-                    style: TextStyle(
+                  Text(
+                    group.groupName,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
 
                   //nums of new messagge
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    width: 15,
-                    alignment: Alignment.center,
-                    height: 15,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Text(
-                      '2',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  group.newMessageNumber > 0
+                      ? Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          width: 15,
+                          alignment: Alignment.center,
+                          height: 15,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            group.newMessageNumber.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
 
             /// time
             Text(
-              '29 mar',
+              group.recentTime,
               style: TextStyle(
                   fontSize: 14, color: Theme.of(context).colorScheme.secondary),
             )
@@ -101,10 +113,17 @@ class ChatItem extends StatelessWidget {
         ),
         //recent Message
         Text(
-          'Hi, David. Hope you\'re doing dad . . .',
+          group.recentMessage.length > 32
+              ? '${group.recentMessage.substring(0, 32)} . . .'
+              : group.recentMessage,
           style: TextStyle(
             fontSize: 16,
-            color: Theme.of(context).colorScheme.secondary,
+            fontWeight: group.newMessageNumber > 0
+                ? FontWeight.w600
+                : FontWeight.normal,
+            color: group.newMessageNumber > 0
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.secondary,
           ),
         )
       ],
