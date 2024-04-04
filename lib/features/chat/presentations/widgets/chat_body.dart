@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:telechat/core/utils/widgets/loader.dart';
+import 'package:telechat/features/chat/presentations/blocs/message_bloc/message_bloc.dart';
 
 import 'package:telechat/features/chat/presentations/widgets/appbar.dart';
 import 'package:telechat/features/chat/presentations/widgets/chat_text_box.dart';
 import 'package:telechat/features/chat/presentations/widgets/message_box.dart';
+import 'package:telechat/features/group/domain/entities/group_entity.dart';
 
 class ChatBody extends StatefulWidget {
-  const ChatBody({super.key});
+  const ChatBody({super.key, required this.group});
+  final GroupEntity group;
 
   @override
   State<ChatBody> createState() => _ChatBodyState();
@@ -22,6 +27,7 @@ class _ChatBodyState extends State<ChatBody> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarCustom(
+        group: widget.group,
         pressPop: () => Navigator.pop(context),
       ),
       body: Column(
@@ -35,17 +41,25 @@ class _ChatBodyState extends State<ChatBody> {
   }
 
   Widget _buildChatList() {
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            childCount: demo.length,
-            (context, index) => MessageBox(
-              message: demo[index],
+    return BlocBuilder<MessageBloc, MessageState>(
+      builder: (context, state) {
+        if (state.status == MessageStatus.failded ||
+            state.status == MessageStatus.loading && state.messages.isEmpty) {
+          return Loader();
+        }
+        return CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                childCount: state.messages.length,
+                (context, index) => MessageBox(
+                  message: state.messages[index],
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

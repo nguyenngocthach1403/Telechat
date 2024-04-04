@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:telechat/features/group/domain/entities/group_entity.dart';
 
 class AppBarCustom extends StatefulWidget implements PreferredSizeWidget {
-  const AppBarCustom({super.key, required this.pressPop});
+  const AppBarCustom({
+    super.key,
+    required this.pressPop,
+    required this.group,
+  });
   final Function() pressPop;
+  final GroupEntity group;
 
   @override
   State<AppBarCustom> createState() => _AppBarCustomState();
@@ -53,9 +59,9 @@ class _AppBarCustomState extends State<AppBarCustom> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Name',
-                style: TextStyle(
+              Text(
+                widget.group.groupName,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -63,23 +69,27 @@ class _AppBarCustomState extends State<AppBarCustom> {
               Row(
                 children: [
                   //Status
-                  Text(
-                    'Active Now',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
+                  widget.group.members.length == 2
+                      ? Text(
+                          'Active',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        )
+                      : const SizedBox(),
                   //Active
-                  Container(
-                    margin: const EdgeInsets.only(left: 10),
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.greenAccent,
-                    ),
-                  )
+                  widget.group.members.length == 2
+                      ? Container(
+                          margin: const EdgeInsets.only(left: 10),
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.greenAccent,
+                          ),
+                        )
+                      : const SizedBox(),
                 ],
               )
             ],

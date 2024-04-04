@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:telechat/features/chat/presentations/widgets/chat_body.dart';
+import 'package:telechat/features/chat/domain/entities/message_entity.dart';
 
 class MessageBox extends StatelessWidget {
   const MessageBox({super.key, required this.message});
-  final MessageEntityDemo message;
+  final MessageEntity message;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,9 @@ class MessageBox extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   margin: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: message.isMe
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onBackground,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -56,7 +58,7 @@ class MessageBox extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        message.message,
+                        message.content,
                         style: const TextStyle(fontSize: 16),
                       ),
 
@@ -78,7 +80,7 @@ class MessageBox extends StatelessWidget {
         //status
         message.isMe
             ? Text(
-                message.dateTime,
+                message.time,
                 style: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.secondary),
@@ -86,13 +88,15 @@ class MessageBox extends StatelessWidget {
             : const SizedBox(),
         //date sent
         message.isMe
-            ? Icon(
-                Ionicons.checkmark,
-                size: 14,
-                color: Theme.of(context).primaryColor,
-              )
+            ? message.sender.isNotEmpty
+                ? Icon(
+                    Ionicons.checkmark,
+                    size: 14,
+                    color: Theme.of(context).primaryColor,
+                  )
+                : const SizedBox()
             : Text(
-                message.dateTime,
+                message.time,
                 style: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.secondary),

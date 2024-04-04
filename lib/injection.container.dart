@@ -7,6 +7,11 @@ import 'package:telechat/features/auth/domain/repository/auth_repository.dart';
 import 'package:telechat/features/auth/domain/usecase/sign_in_usecase.dart';
 import 'package:telechat/features/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:telechat/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:telechat/features/chat/data/repository/message_repository_impl.dart';
+import 'package:telechat/features/chat/data/sources/remote/message_remote_service.dart';
+import 'package:telechat/features/chat/domain/repository/message_repository.dart';
+import 'package:telechat/features/chat/domain/usecases/get_all_message_usecase.dart';
+import 'package:telechat/features/chat/presentations/blocs/message_bloc/message_bloc.dart';
 import 'package:telechat/features/group/data/repository/user_repository_impl.dart';
 import 'package:telechat/features/group/data/sources/remote/group_service.dart';
 import 'package:telechat/features/group/data/sources/remote/user_sevice.dart';
@@ -31,11 +36,17 @@ Future<void> initializeDependency() async {
   sl.registerSingleton<UserService>(UserServiceImpl(firestore, auth));
   sl.registerSingleton<GroupServiceImpl>(GroupServiceImpl(firestore));
   sl.registerSingleton<GroupService>(GroupServiceImpl(firestore));
+  sl.registerSingleton<MessageRemoteServiceImpl>(
+      MessageRemoteServiceImpl(firestore));
+  sl.registerSingleton<MessageRemoteService>(
+      MessageRemoteServiceImpl(firestore));
 
   sl.registerSingleton<AuthRepositoryImpl>(AuthRepositoryImpl(sl()));
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(sl()));
   sl.registerSingleton<GroupRepositoryImpl>(GroupRepositoryImpl(sl(), sl()));
   sl.registerSingleton<GroupRepository>(GroupRepositoryImpl(sl(), sl()));
+  sl.registerSingleton<MessageRepositoryImpl>(MessageRepositoryImpl(sl()));
+  sl.registerSingleton<MessageRepository>(MessageRepositoryImpl(sl()));
 
   //Usecases
   sl.registerSingleton<SigInUsecase>(SigInUsecase(sl()));
@@ -44,9 +55,11 @@ Future<void> initializeDependency() async {
   sl.registerSingleton<GetCurrentUID>(GetCurrentUID(sl()));
   sl.registerSingleton<GetMyGroupUsecase>(GetMyGroupUsecase(sl()));
   sl.registerSingleton<CreateNewGroupUseCase>(CreateNewGroupUseCase(sl()));
+  sl.registerSingleton<GetAllMessageUseCase>(GetAllMessageUseCase(sl()));
 
   //Bloc
   sl.registerFactory(() => AuthBloc(sl(), sl()));
   sl.registerFactory(() => UserBloc(sl(), sl()));
   sl.registerFactory(() => GroupBloc(sl(), sl(), sl()));
+  sl.registerFactory(() => MessageBloc(sl(), sl()));
 }

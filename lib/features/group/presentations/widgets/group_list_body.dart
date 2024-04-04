@@ -176,7 +176,9 @@ class _GroupListBodyState extends State<GroupListBody> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ChatPage(),
+                          builder: (context) => ChatPage(
+                            group: state.groups[index],
+                          ),
                         ),
                       );
                     },
