@@ -52,6 +52,26 @@ class GroupEntity extends Equatable {
     };
   }
 
+  Map<String, dynamic> toDocument() {
+    return <String, dynamic>{
+      'gid': groupId,
+      'group_name': groupName,
+      'group_image': groupImage,
+      'members': members,
+    };
+  }
+
+  Map<String, dynamic> toDocumentMyGroup() {
+    return <String, dynamic>{
+      'gid': '',
+      'group_name': groupName,
+      'recent_message': '',
+      'recent_time': '',
+      'group_image': groupImage,
+      'new_message_number': 0,
+    };
+  }
+
   factory GroupEntity.fromMap(Map<String, dynamic> map) {
     return GroupEntity(
         groupId: map['gid'] as String,

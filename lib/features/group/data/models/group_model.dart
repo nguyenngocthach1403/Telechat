@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:telechat/core/resources/get_date_time_by_timestamp.dart';
 import 'package:telechat/features/group/domain/entities/group_entity.dart';
 
 class GroupModel extends GroupEntity {
@@ -24,15 +25,25 @@ class GroupModel extends GroupEntity {
           groupName: snapshot.get('group_name'),
           groupImage: snapshot.get('group_image'),
           recentMessage: snapshot.get('recent_message'),
-          recentTime: snapshot.get('recent_time'),
+          recentTime: snapshot.get('recent_time') is String
+              ? ''
+              : getDatetimeByTimestamp(snapshot.get('recent_time')).toString(),
           members: List<String>.from(
               snapshot.get('members').map((e) => e.toString()).toList()),
         );
 
-  GroupModel.fromMapToMyGroup({String gid = '', int newMessageNumber = 0})
+  GroupModel.fromSnapshotToMyGroup(DocumentSnapshot snapshot)
       : super(
-          groupId: gid,
-          newMessageNumber: newMessageNumber,
+          groupId: snapshot.get('gid'),
+          groupName: snapshot.get('group_name'),
+          groupImage: snapshot.get('group_image'),
+          newMessageNumber: snapshot.get('new_message_number'),
+          recentMessage: snapshot.get('recent_message'),
+          recentTime: snapshot.get('recent_time') is String
+              ? ''
+              : dateTimeToString(getDatetimeByTimestamp(
+                  (snapshot.get('recent_time') as Timestamp),
+                )),
         );
 
   Map<String, dynamic> toDocument() {
@@ -50,7 +61,10 @@ class GroupModel extends GroupEntity {
     return {
       'gid': groupId,
       'group_name': groupName,
+      'group_image': groupImage,
       'new_message_number': newMessageNumber,
+      'recent_message': '',
+      'recent_time': '',
     };
   }
 
