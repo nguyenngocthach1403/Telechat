@@ -4,12 +4,12 @@ import 'package:telechat/features/group/domain/entities/group_entity.dart';
 import 'package:telechat/features/group/domain/repository/user_repository.dart';
 
 class CreateNewGroupUseCase
-    extends UseCase<DataState<bool, String>, GroupEntity> {
+    extends UseCase<DataState<void, String>, GroupEntity> {
   GroupRepository _groupRepository;
   CreateNewGroupUseCase(this._groupRepository);
 
   @override
-  Future<DataState<bool, String>> call(GroupEntity params) {
-    return _groupRepository.createNewGroup(params);
+  Future<DataState<void, String>> call(GroupEntity params) {
+    return _groupRepository.createGroup(params);
   }
 }
