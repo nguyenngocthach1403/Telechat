@@ -5,6 +5,7 @@ import 'package:telechat/core/utils/widgets/bottom_navigator.dart';
 import 'package:telechat/core/utils/widgets/loader.dart';
 import 'package:telechat/core/utils/widgets/snackbar.dart';
 import 'package:telechat/features/chat/presentations/views/chat_page.dart';
+import 'package:telechat/features/group/domain/entities/group_entity.dart';
 import 'package:telechat/features/group/presentations/bloc/group/group_bloc.dart';
 import 'package:telechat/features/group/presentations/bloc/user/user_bloc.dart';
 import 'package:telechat/features/group/presentations/widgets/add_person.dart';
@@ -165,6 +166,7 @@ class _GroupListBodyState extends State<GroupListBody> {
           if (state.status == GroupStatus.loadfailed) {
             return const SizedBox();
           }
+<<<<<<< HEAD
           return CustomScrollView(
             slivers: [
               SliverList(
@@ -179,14 +181,58 @@ class _GroupListBodyState extends State<GroupListBody> {
                           builder: (context) => ChatPage(
                             group: state.groups[index],
                           ),
+=======
+          return StreamBuilder<List<GroupEntity>>(
+              stream: state.groups,
+              builder: (context, snapshot) {
+                //Stream has error
+                if (snapshot.hasError) {
+                  //Show error on screen
+                  // showSnackBarr(
+                  //   context,
+                  //   color: Colors.red,
+                  //   content: snapshot.error.toString(),
+                  // );
+
+                  //return loading screen
+                  return const Loader();
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  //return loading screen
+                  return const Loader();
+                }
+
+                //Has not data
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: Text('Has not any something here!'),
+                  );
+                }
+
+                //snapshot successfully
+                return CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: snapshot.data!.length,
+                        (context, index) => ChatItem(
+                          group: snapshot.data![index],
+                          press: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ChatPage(),
+                              ),
+                            );
+                          },
+>>>>>>> 53a2938789affbc3a7a9604c6086d1acf0d3ec0f
                         ),
-                      );
-                    },
-                  ),
-                ),
-              )
-            ],
-          );
+                      ),
+                    )
+                  ],
+                );
+              });
         },
       ),
     );

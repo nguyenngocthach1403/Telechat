@@ -4,10 +4,9 @@ import 'package:telechat/features/group/data/models/group_model.dart';
 import 'package:telechat/features/group/domain/entities/group_entity.dart';
 
 abstract class GroupService {
-  Future<List<GroupModel>> getMyGroup(String uid);
-  Future<List<GroupModel>> getAllGroup();
-  Future<GroupModel> createGroup(GroupEntity group);
-  Future<void> updateMyGroup(List<GroupEntity> group, String uid);
+  Future<Stream<List<GroupModel>>> getMyGroup(String uid);
+
+  Future<void> createGroup(GroupEntity groupToCreate);
 }
 
 class GroupServiceImpl implements GroupService {
@@ -15,48 +14,47 @@ class GroupServiceImpl implements GroupService {
   GroupServiceImpl(this._firestore);
 
   @override
-  Future<GroupModel> createGroup(GroupEntity group) async {
+  Future<Stream<List<GroupModel>>> getMyGroup(String uid) async {
+    //Get snapshot
+    final docSnapshot = _firestore
+        .collection(userDocument)
+        .doc(uid)
+        .collection('MyGroups')
+        .snapshots();
+
+    //Convert to QuerySnapshot to List<GroupModel>
+    //Return it
+    return docSnapshot.map((event) =>
+        event.docs.map((e) => GroupModel.fromSnapshotToMyGroup(e)).toList());
+  }
+
+  @override
+  Future<void> createGroup(GroupEntity groupToCreate) async {
+    //get collection
     final doc = _firestore.collection(groupDocument).doc();
-    //
-    GroupModel newGroup = GroupModel(
-      groupId: doc.id,
-      groupName: group.groupName,
-      groupImage: group.groupImage,
-      members: group.members,
-    );
-    await _firestore
-        .collection(groupDocument)
+
+    final groupToCreateHasId = groupToCreate.copyWith(groupId: doc.id);
+
+    //Add to collection group
+    _firestore
+        .collection(
+          groupDocument,
+        )
         .doc(doc.id)
-        .set(newGroup.toMap());
-    return GroupModel.fromSnapshot(
-        await _firestore.collection(groupDocument).doc(doc.id).get());
-  }
+        .set(groupToCreateHasId.toDocument());
 
-  @override
-  Future<List<GroupModel>> getMyGroup(String uid) async {
-    final querrySnapshot =
-        await _firestore.collection(userDocument).doc(uid).get();
-    final groups = querrySnapshot.get('groups');
-    final List<GroupModel> myGroups = [];
-    for (var element in groups) {
-      myGroups.add(GroupModel.fromMapToMyGroup(
-          gid: element['gid'],
-          newMessageNumber: element['new_message_number']));
-    }
-    return myGroups;
-  }
+    //Add to my group of member
+    groupToCreate.members.forEach(
+      (element) {
+        //Get collection
+        final myGroupDoc = _firestore
+            .collection(userDocument)
+            .doc(element)
+            .collection('MyGroups');
 
-  @override
-  Future<List<GroupModel>> getAllGroup() async {
-    return await _firestore.collection(groupDocument).get().then(
-        (value) => value.docs.map((e) => GroupModel.fromSnapshot(e)).toList());
-  }
-
-  @override
-  Future<void> updateMyGroup(List<GroupEntity> group, String uid) async {
-    final groupToUpdate =
-        group.map((e) => GroupModel.fromGroupEntity(e)).toList();
-    return await _firestore.collection(userDocument).doc(uid).update(
-        {'groups': groupToUpdate.map((e) => e.toMyGroupDocument()).toList()});
+        // Add
+        myGroupDoc.doc(doc.id).set(groupToCreateHasId.toDocumentMyGroup());
+      },
+    );
   }
 }

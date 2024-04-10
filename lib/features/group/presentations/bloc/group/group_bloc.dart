@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:telechat/core/resources/data_state.dart';
@@ -17,7 +19,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     this._createNewGroupUseCase,
   ) : super(GroupState(status: GroupStatus.initial)) {
     on<LoadGroup>(_loadMyGroup);
-    on<CreateGroup>(_createNewGroup);
+    on<CreateGroup>(_createGroup);
   }
 
   GetMyGroupUsecase _getMyGroupUsecase;
@@ -25,49 +27,43 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
 
   CreateNewGroupUseCase _createNewGroupUseCase;
 
-  _createNewGroup(CreateGroup e, Emitter<GroupState> emit) async {
-    emit(GroupState(status: GroupStatus.creating));
+  _createGroup(CreateGroup e, Emitter<GroupState> emit) async {
+    //Creating state
+    emit(state.copyWith(status: GroupStatus.creating));
+
     final res = await _createNewGroupUseCase.call(e.newGroup);
+
+    //check successfully
     if (res is DataSuccess) {
-      emit(GroupState(status: GroupStatus.created));
+      emit(state.copyWith(
+        status: GroupStatus.created,
+      ));
     } else {
-      emit(GroupState(status: GroupStatus.createfailed, error: res.error));
+      emit(state.copyWith(status: GroupStatus.createfailed, error: res.error));
     }
   }
 
   _loadMyGroup(LoadGroup e, Emitter<GroupState> emit) async {
-    emit(GroupState(status: GroupStatus.loadding));
+    //Loading state
+    emit(state.copyWith(status: GroupStatus.loadding));
 
-    final currentUid = await _getCurrentUID.call(NoParam());
+    //Get current uid
+    final currentUid = await _getCurrentUID(NoParam());
 
-    if (currentUid.isEmpty) return;
-
-    final res = await _getMyGroupUsecase.call(currentUid);
-
-    if (res is DataSuccess) {
-      final groups = res.data;
-      if (groups == null) {
-        emit(GroupState(status: GroupStatus.loadfailed, error: 'Empty!'));
-      }
-      emit(GroupState(status: GroupStatus.loaded, groups: groups!));
-    } else {
-      emit(GroupState(status: GroupStatus.loadfailed, error: res.error));
+    //have not any about current user
+    if (currentUid.isEmpty) {
+      //Load failed
+      emit(state.copyWith(
+          status: GroupStatus.loadfailed, error: 'Not found user to load!'));
     }
-  }
 
-  Future<List<GroupEntity>> loadGroup() async {
-    final currentUid = await _getCurrentUID.call(NoParam());
+    //Get Stream load group
+    final groupStream = await _getMyGroupUsecase.call(currentUid);
 
-    if (currentUid.isEmpty) return [];
-
-    final res = await _getMyGroupUsecase.call(currentUid);
-
-    if (res is DataSuccess) {
-      final groups = res.data;
-      if (groups == null) return [];
-      return groups;
-    } else {
-      return [];
-    }
+    //load Successfully
+    emit(state.copyWith(
+      groups: groupStream,
+      status: GroupStatus.loaded,
+    ));
   }
 }
